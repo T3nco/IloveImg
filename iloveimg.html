@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" integrity="sha512-cyzxRvewl+FOKTtpBzYjW6x6IAYUCZy3sGP40hn+DQkqeluGRCax7qztK2ImL64SA+C7kVWdLI6wvdlStawhyw==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+
+    <style>
+        body {
+            background: #ececec;
+        }
+
+        .form-group input[type="date"],
+        .form-group input[type="number"] {
+            width: 100%;
+            padding: 0.375rem 0.75rem;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            color: #495057;
+            background-color: #fff;
+            background-clip: padding-box;
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+
+        .container.mt-5 {
+            background-color: #f8fbfe;
+            /* Light gray background */
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 50px;
+        }
+
+        .tools {
+            display: flex;
+            align-items: center;
+            padding: 9px;
+        }
+
+        .circle {
+            padding: 0 4px;
+        }
+
+        .box {
+            display: inline-block;
+            align-items: center;
+            width: 20px;
+            height: 20px;
+            padding: 1px;
+            border-radius: 50%;
+        }
+
+        .red {
+            background-color: #ff605c;
+        }
+
+        .yellow {
+            background-color: #ffbd44;
+        }
+
+        .green {
+            background-color: #00ca4e;
+        }
+
+        .btn-primary {
+            background-color: #333;
+            border: 1px solid #333;
+            width: 100%;
+            /* Full width button */
+        }
+
+        .btn-primary:hover {
+            background-color: #555;
+            border: 1px solid #555;
+        }
+
+        #imageBox {
+            border: 2px dashed #ccc;
+            padding: 20px;
+            text-align: center;
+            margin: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #imageBox img {
+            max-width: 100%;
+            max-height: 200px;
+            margin-bottom: 10px;
+        }
+
+        .container.mt-5 {
+            background-color: #f8fbfe;
+            /* Light gray background */
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 50px;
+        }
+
+        .btn-primary {
+            background-color: #333;
+            border: 1px solid #333;
+            width: 100%;
+            /* Full width button */
+        }
+
+        .btn-primary:hover {
+            background-color: #555;
+            border: 1px solid #555;
+        }
+
+        .button {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 8px 12px 8px 16px;
+            gap: 8px;
+            height: 40px;
+            width: 128px;
+            border: none;
+            background: #056bfa27;
+            border-radius: 20px;
+            cursor: pointer;
+          }
+          
+          .lable {
+            margin-top: 1px;
+            font-size: 19px;
+            line-height: 22px;
+            color: #056DFA;
+            font-family: sans-serif;
+            letter-spacing: 1px;
+          }
+          
+          .button:hover {
+            background: #056bfa49;
+          }
+          
+          .button:hover .svg-icon {
+            animation: spin 1s linear infinite;
+          }
+          
+          @keyframes spin {
+            0% {
+              transform: rotate(0deg);
+            }
+          
+            25% {
+              transform: rotate(-8deg);
+            }
+          
+            50% {
+              transform: rotate(0deg);
+            }
+          
+            75% {
+              transform: rotate(8deg);
+            }
+          
+            100% {
+              transform: rotate(0deg);
+            }
+          }
+    </style>
+</head>
+
+<body>
+    <div class="container mt-5">
+        <div class="navbar">
+            <!-- Nav items -->
+            <div class="nav-item" onclick="showView(0)">Compress IMG</div>
+            <div class="nav-item" onclick="showView(1)">Crop Image</div>
+            <div class="nav-item" onclick="showView(2)">Convert to JPG</div>
+            <div class="nav-item" onclick="showView(3)">Resize Image</div>
+        </div>
+        <div class="tools">
+            <!-- Circles -->
+            <div class="circle">
+                <span class="red box"></span>
+            </div>
+            <div class="circle">
+                <span class="yellow box"></span>
+            </div>
+            <div class="circle">
+                <span class="green box"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div id="view1" class="view" style="display: none;">
+                    <h2 class="mb-4">Compress IMG</h2>
+                    <div class="row" style="display:flex;justify-content: center; align-items:center;">
+                        <div id="imageBox">
+                            <input type="file" id="fileInput" style="display: none;" accept="image/*">
+                            <div id="imagePreview"></div>
+                            <button onclick="openFileExplorer()" class="button">
+                                <svg class="svg-icon" width="24" viewBox="0 0 24 24" height="24" fill="none"><g stroke-width="2" stroke-linecap="round" stroke="#056dfa" fill-rule="evenodd" clip-rule="evenodd"><path d="m3 7h17c.5523 0 1 .44772 1 1v11c0 .5523-.4477 1-1 1h-16c-.55228 0-1-.4477-1-1z"></path><path d="m3 4.5c0-.27614.22386-.5.5-.5h6.29289c.13261 0 .25981.05268.35351.14645l2.8536 2.85355h-10z"></path></g></svg>
+                                <span class="lable">Explorer</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <button class="btn btn-primary" onclick="compressimg()">Compress</button>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-12">
+                            <div id="result1"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div id="view3" class="view" style="display: none;">
+                    <h2 class="mb-4">Crop Image</h2>
+                    <div class="container" id="box-crop">
+                        <div id="preview-crop"></div>
+                        <div id="box">
+                            <h2 id="h2-avatar">Avatar</h2>
+                            <form enctype="multipart/form-data">
+                                <input type="file" name="file" id="avatar-image">
+                            </form>
+                        </div>
+                    </div>
+                    <button id="downloadButton" style="display: block;">Download Cropped Image</button>
+                </div>             
+            </div>
+            <div class="col-md-12">
+                <div id="view2" class="view" style="display: none;">
+                    <h2 class="mb-4">Convert to JPG</h2>
+                    <div id="image-box">
+                        <input type="file" id="file-input" accept="image/*">
+                        <img id="preview-image" src="#" alt="Preview Image">
+                        <button id="convert-button" class="btn btn-primary">Convert to JPG</button>
+                        <a id="download-button" style="display: none;" download="converted_image.jpg">Download Converted Image</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div id="view4" class="view" style="display: none;">
+                    <h2 class="mb-4">Resize Image</h2>
+                    <div id="preview-container">
+                        <input type="file" id="image-input">
+                        <img id="preview-image" src="#" alt="Preview Image">
+                        <label for="width-input">Width:</label>
+                        <input type="number" id="width-input" min="10" max="1000" value="100">
+                        <label for="height-input">Height:</label>
+                        <input type="number" id="height-input" min="10" max="1000" value="100">
+                        <button id="resizeButton">Resize Image</button>
+                        <a id="downloadResizedButton" style="display: none;" download="resized_image.jpg">Download Resized Image</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Bootstrap JS (optional, only if you need JavaScript features from Bootstrap) -->
+    <script src="crop.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"
+        integrity="sha512-6lplKUSl86rUVprDIjiW8DuOniNX8UDoRATqZSds/7t6zCQZfaCe3e5zcGaQwxa8Kpn5RTM9Fvl3X2lLV4grPQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        //view function
+        function showView(viewIndex) {
+            var views = document.querySelectorAll('.view');
+            views.forEach(function (view, index) {
+                if (index === viewIndex) {
+                    view.style.display = 'block';
+                } else {
+                    view.style.display = 'none';
+                }
+            });
+        }
+
+        //open file explorer
+        function openFileExplorer() {
+            document.getElementById('fileInput').click();
+        }
+
+        //compress image function
+        function compressimg(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = function () {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        canvas.width = 300; // Adjust the width as needed
+                        canvas.height = img.height * (canvas.width / img.width);
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        canvas.toBlob((blob) => {
+                            resolve(blob);
+                        }, 'image/jpeg', 0.7); // Adjust the quality (0.7 = 70%)
+                    };
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        document.getElementById('fileInput').addEventListener('change', async function () {
+            const file = this.files[0];
+            if (file) {
+                const compressedBlob = await compressImage(file);
+                const compressedImage = new File([compressedBlob], file.name, { type: compressedBlob.type });
+                const imagePreview = document.getElementById('imagePreview');
+                const img = document.createElement('img');
+                img.src = URL.createObjectURL(compressedImage);
+                imagePreview.innerHTML = '';
+                imagePreview.appendChild(img);
+
+                // Change button text to "Download"
+                const button = document.querySelector('#imageBox button');
+                button.textContent = 'Download';
+                button.onclick = () => {
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(compressedImage);
+                    link.download = file.name;
+                    link.click();
+                };
+            }
+        });
+
+        document.getElementById('image-input').addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const image = new Image();
+                image.onload = function () {
+                    document.getElementById('preview-image').src = e.target.result;
+                };
+                image.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        document.getElementById('resizeButton').addEventListener('click', function () {
+            const width = document.getElementById('width-input').value;
+            const height = document.getElementById('height-input').value;
+            const image = document.getElementById('preview-image');
+
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = width;
+            canvas.height = height;
+            ctx.drawImage(image, 0, 0, width, height);
+
+            const resizedImageURL = canvas.toDataURL('image/jpeg');
+            const downloadButton = document.getElementById('downloadResizedButton');
+            downloadButton.href = resizedImageURL;
+            downloadButton.style.display = 'block';
+        });
+
+        document.getElementById('file-input').addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const image = new Image();
+                image.onload = function () {
+                    document.getElementById('preview-image').src = e.target.result;
+                };
+                image.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        document.getElementById('convert-button').addEventListener('click', function () {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const image = document.getElementById('preview-image');
+            canvas.width = image.naturalWidth; // Use natural width and height
+            canvas.height = image.naturalHeight;
+            ctx.drawImage(image, 0, 0);
+
+            const convertedURL = canvas.toDataURL('image/jpeg');
+            const downloadButton = document.getElementById('download-button');
+            downloadButton.href = convertedURL;
+            downloadButton.style.display = 'block';
+        });
+    </script>
+</body>
+
+</html>
